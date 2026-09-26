@@ -55,20 +55,30 @@ See `.env.example`. Key ones:
   the console in development.
 - `CONTACT_RECIPIENT_EMAIL` — where contact form notifications are sent.
 
-## Deployment
+## Deployment (Render)
 
 This is a standard Django app (WSGI + a database + media/static files), so it fits
-naturally on **Render** or **Railway** (both have a free tier, native PostgreSQL, and
-persistent storage) rather than a serverless platform like Vercel — serverless
-functions don't keep a writable filesystem, which the admin's SQLite/media uploads and
-WhiteNoise's static file manifest both rely on.
+naturally on **Render** (free tier, native PostgreSQL, persistent storage) rather than
+a serverless platform like Vercel — serverless functions don't keep a writable
+filesystem, which the admin's media uploads and WhiteNoise's static manifest rely on.
 
-1. Push this repo to GitHub.
-2. Create a new Web Service on Render/Railway, connect the repo.
-3. Set the environment variables from `.env.example` (with `DJANGO_DEBUG=False` and a
-   real `DJANGO_SECRET_KEY`), plus a `DATABASE_URL` if using managed PostgreSQL.
-4. Build command: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
-5. Start command: `gunicorn config.wsgi:application`
+The repo includes a `render.yaml` Blueprint, so deploying is one click:
+
+1. Go to [dashboard.render.com](https://dashboard.render.com), sign in with GitHub.
+2. **New +** → **Blueprint** → select this repo. Render reads `render.yaml` and
+   provisions both the web service and a free PostgreSQL database automatically.
+3. Click **Apply**. `DJANGO_SECRET_KEY` is generated for you, `DATABASE_URL` is wired
+   to the new database, migrations run and the site is seeded on first deploy.
+4. Once live, note the assigned `https://<name>.onrender.com` URL — Django picks it up
+   automatically via the `RENDER_EXTERNAL_HOSTNAME` env var Render injects.
+
+To deploy manually instead (or on Railway):
+
+1. Create a Web Service + PostgreSQL database, connect this repo.
+2. Set env vars from `.env.example`, `DJANGO_DEBUG=False`, a real `DJANGO_SECRET_KEY`,
+   and `DATABASE_URL` from the database instance.
+3. Build command: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
+4. Start command: `gunicorn config.wsgi:application`
 
 ### Docker
 

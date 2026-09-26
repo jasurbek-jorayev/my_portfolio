@@ -38,6 +38,12 @@ CSRF_TRUSTED_ORIGINS = [
     if origin.strip()
 ]
 
+# Render sets this automatically to the service's *.onrender.com hostname.
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
+
 
 # Application definition
 
@@ -89,12 +95,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
+#
+# Uses SQLite locally. Set DATABASE_URL (Render/Railway inject this
+# automatically for a provisioned PostgreSQL instance) to switch to Postgres
+# in production without any code changes.
+
+import dj_database_url
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+    )
 }
 
 
@@ -160,6 +172,9 @@ CONTACT_RECIPIENT_EMAIL = os.environ.get('CONTACT_RECIPIENT_EMAIL', 'jjasurbek00
 ADMINS = [('Portfolio owner', CONTACT_RECIPIENT_EMAIL)]
 
 if not DEBUG:
+    # Render/Railway terminate TLS at their proxy and forward plain HTTP,
+    # signalling the original scheme via this header.
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_HSTS_SECONDS = 60 * 60 * 24 * 7
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SESSION_COOKIE_SECURE = True
