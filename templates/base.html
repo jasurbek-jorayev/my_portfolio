@@ -1,0 +1,53 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ profile.full_name }} — {{ profile.role_title }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ profile.meta_description }}{% endblock %}">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ profile.full_name }} — {{ profile.role_title }}">
+  <meta property="og:description" content="{{ profile.meta_description }}">
+
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <a href="{% url 'pages:home' %}" class="brand">
+        <span class="brand-mark">{{ profile.initials|default:"JJ" }}</span>
+        <span>{{ profile.full_name|default:"Jasurbek Jo'rayev" }}</span>
+      </a>
+
+      <nav class="nav-links" data-nav-links>
+        <a href="{% url 'pages:home' %}#about">About</a>
+        <a href="{% url 'pages:home' %}#skills">Skills</a>
+        <a href="{% url 'projects:list' %}">Projects</a>
+        <a href="{% url 'pages:home' %}#contact">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button type="button" class="icon-btn" data-theme-toggle aria-label="Toggle color theme">🌙</button>
+        <button type="button" class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "includes/footer.html" %}
+
+  <script src="{% static 'js/main.js' %}" defer></script>
+</body>
+</html>

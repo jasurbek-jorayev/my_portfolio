@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="hero container">
+  <div class="reveal">
+    <h1 class="hero-tagline">
+      Hi, I'm {{ profile.full_name|default:"Jasurbek Jo'rayev" }} —
+      <span class="accent">{{ profile.role_title|default:"Python Backend Developer" }}</span>
+    </h1>
+    <p class="hero-lead">{{ profile.tagline }}</p>
+    <div class="hero-actions">
+      <a href="{% url 'projects:list' %}" class="btn btn-primary">View my work</a>
+      <a href="#contact" class="btn btn-outline">Get in touch</a>
+      {% if profile.resume %}
+        <a href="{{ profile.resume.url }}" class="btn btn-outline" download>Download résumé</a>
+      {% endif %}
+    </div>
+    <div class="hero-meta">
+      {% if profile.location %}<span>📍 {{ profile.location }}</span>{% endif %}
+      {% if profile.telegram_display %}<span>✈️ {{ profile.telegram_display }}</span>{% endif %}
+      <span>🎓 {{ profile.education_place }} graduate</span>
+    </div>
+  </div>
+
+  <div class="terminal reveal">
+    <div class="terminal-bar">
+      <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+    </div>
+    <pre><span class="kw">class</span> <span class="fn">Developer</span>:
+    <span class="cm"># {{ profile.full_name|default:"Jasurbek Jo'rayev" }}</span>
+    name = <span class="str">"{{ profile.full_name|default:"Jasurbek Jo'rayev" }}"</span>
+    role = <span class="str">"{{ profile.role_title }}"</span>
+    stack = [<span class="str">"Python"</span>, <span class="str">"Django"</span>, <span class="str">"aiogram"</span>, <span class="str">"Next.js"</span>]
+
+    <span class="kw">async def</span> <span class="fn">ship</span>(self, idea):
+        <span class="kw">return</span> <span class="str">"production-ready product"</span></pre>
+  </div>
+</section>
+
+<section id="about" class="section container">
+  <div class="section-head reveal">
+    <span class="eyebrow">About</span>
+    <h2>A bit about how I work</h2>
+  </div>
+  <div class="about-grid">
+    <p class="about-bio reveal">{{ profile.bio }}</p>
+    <div class="fact-card reveal">
+      <dl class="fact-list">
+        <dt>Role</dt><dd>{{ profile.role_title }}</dd>
+        <dt>Location</dt><dd>{{ profile.location }}</dd>
+        <dt>Education</dt><dd>{{ profile.education_program }} — {{ profile.education_place }}{% if profile.education_period %} ({{ profile.education_period }}){% endif %}</dd>
+        <dt>Focus</dt><dd>Telegram bots, Mini Apps &amp; AI-powered education tools</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="section container">
+  <div class="section-head reveal">
+    <span class="eyebrow">Skills</span>
+    <h2>Tools I build with</h2>
+    <p>A practical, async-first Python stack, paired with modern frontend tooling and AI APIs.</p>
+  </div>
+  <div class="skill-groups">
+    {% regroup skills by get_category_display as skill_groups %}
+    {% for group in skill_groups %}
+      <div class="skill-group reveal">
+        <h3>{{ group.grouper }}</h3>
+        <div class="tag-list">
+          {% for skill in group.list %}<span class="tag">{{ skill.name }}</span>{% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="projects" class="section container">
+  <div class="section-head reveal">
+    <span class="eyebrow">Projects</span>
+    <h2>Things I've shipped</h2>
+    <p>Real products used by Uzbek-speaking learners — from AI tutors to exam-prep platforms.</p>
+  </div>
+  <div class="project-grid">
+    {% for project in featured_projects %}
+      {% include "projects/_card.html" %}
+    {% empty %}
+      <p>Projects are on their way — check back soon.</p>
+    {% endfor %}
+  </div>
+  <div class="section-foot reveal">
+    <a href="{% url 'projects:list' %}" class="btn btn-outline">See all projects</a>
+  </div>
+</section>
+
+<section id="contact" class="section container">
+  <div class="section-head reveal">
+    <span class="eyebrow">Contact</span>
+    <h2>Let's build something together</h2>
+    <p>Have a project in mind, or just want to say hi? Send a message or reach out directly.</p>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="contact-grid">
+    <div class="contact-card reveal">
+      {% if profile.email %}
+        <a class="contact-row" href="mailto:{{ profile.email }}">
+          <span class="icon-btn">✉️</span>
+          <div><span>Email</span><strong>{{ profile.email }}</strong></div>
+        </a>
+      {% endif %}
+      {% if profile.telegram_url %}
+        <a class="contact-row" href="{{ profile.telegram_url }}" target="_blank" rel="noopener">
+          <span class="icon-btn">✈️</span>
+          <div><span>Telegram</span><strong>{{ profile.telegram_display }}</strong></div>
+        </a>
+      {% endif %}
+      {% if profile.github_url %}
+        <a class="contact-row" href="{{ profile.github_url }}" target="_blank" rel="noopener">
+          <span class="icon-btn">🐙</span>
+          <div><span>GitHub</span><strong>{{ profile.github_url|cut:"https://" }}</strong></div>
+        </a>
+      {% endif %}
+    </div>
+
+    <form method="post" action="{% url 'pages:home' %}#contact" class="reveal">
+      {% csrf_token %}
+      <div class="form-row-split">
+        <div class="form-group">
+          <label for="{{ form.name.id_for_label }}">Name</label>
+          {{ form.name }}
+          {{ form.name.errors }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.email.id_for_label }}">Email</label>
+          {{ form.email }}
+          {{ form.email.errors }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="{{ form.subject.id_for_label }}">Subject</label>
+        {{ form.subject }}
+        {{ form.subject.errors }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.message.id_for_label }}">Message</label>
+        {{ form.message }}
+        {{ form.message.errors }}
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Send message</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

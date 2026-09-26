@@ -1,0 +1,16 @@
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-note">&copy; {% now "Y" %} {{ profile.full_name|default:"Jasurbek Jo'rayev" }}. Built with Django.</p>
+    <div class="social-links">
+      {% if profile.github_url %}
+        <a class="icon-btn" href="{{ profile.github_url }}" target="_blank" rel="noopener" aria-label="GitHub">🐙</a>
+      {% endif %}
+      {% if profile.telegram_url %}
+        <a class="icon-btn" href="{{ profile.telegram_url }}" target="_blank" rel="noopener" aria-label="Telegram">✈️</a>
+      {% endif %}
+      {% if profile.email %}
+        <a class="icon-btn" href="mailto:{{ profile.email }}" aria-label="Email">✉️</a>
+      {% endif %}
+    </div>
+  </div>
+</footer>

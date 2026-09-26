@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} — {{ profile.full_name }}{% endblock %}
+{% block meta_description %}{{ project.summary }}{% endblock %}
+
+{% block content %}
+<section class="section container project-hero">
+  <a href="{% url 'projects:list' %}" class="back-link reveal">&larr; All projects</a>
+
+  <div class="reveal">
+    {% if project.is_featured %}<span class="featured-badge">Featured</span>{% endif %}
+    <h1>{{ project.title }}</h1>
+    <p class="hero-lead">{{ project.summary }}</p>
+  </div>
+
+  <div class="project-detail-thumb reveal">
+    <div class="project-thumb" style="aspect-ratio: auto; height: 100%;">
+      {% if project.image %}
+        <img src="{{ project.image.url }}" alt="{{ project.title }} screenshot">
+      {% else %}
+        {{ project.initials }}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="project-detail-body reveal">
+    <div class="description">{{ project.description|linebreaks }}</div>
+    <div class="fact-card">
+      <dl class="fact-list">
+        <dt>Tech stack</dt>
+        <dd>
+          <div class="tag-list" style="margin-top:8px;">
+            {% for tech in project.tech_list %}<span class="tag">{{ tech }}</span>{% endfor %}
+          </div>
+        </dd>
+      </dl>
+      <div class="hero-actions" style="margin-top:20px;">
+        {% if project.github_url %}<a href="{{ project.github_url }}" target="_blank" rel="noopener" class="btn btn-outline">GitHub repo</a>{% endif %}
+        {% if project.live_url %}<a href="{{ project.live_url }}" target="_blank" rel="noopener" class="btn btn-primary">Live demo</a>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if other_projects %}
+    <div class="section-head reveal" style="margin-top:64px;">
+      <span class="eyebrow">More</span>
+      <h2>Other projects</h2>
+    </div>
+    <div class="project-grid">
+      {% for project in other_projects %}
+        {% include "projects/_card.html" %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

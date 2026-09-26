@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Projects — {{ profile.full_name }}{% endblock %}
+{% block meta_description %}All projects built by {{ profile.full_name }}: Telegram bots, Mini Apps and AI-powered platforms.{% endblock %}
+
+{% block content %}
+<section class="section container">
+  <div class="section-head reveal">
+    <span class="eyebrow">Projects</span>
+    <h2>Everything I've built</h2>
+    <p>A full list of the products I've shipped, from Telegram bots to AI-powered web apps.</p>
+  </div>
+  <div class="project-grid">
+    {% for project in projects %}
+      {% include "projects/_card.html" %}
+    {% empty %}
+      <p>No projects yet — check back soon.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
