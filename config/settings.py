@@ -138,14 +138,10 @@ STORAGES = {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
     'staticfiles': {
-        # The manifest backend needs `collectstatic` to have run, so it's only
-        # safe to use once DEBUG is off (production/Docker). In development
-        # and tests, fall back to serving static files directly.
-        'BACKEND': (
-            'whitenoise.storage.CompressedManifestStaticFilesStorage'
-            if not DEBUG
-            else 'django.contrib.staticfiles.storage.StaticFilesStorage'
-        ),
+        # Compression without the hashed-manifest step: simpler and avoids
+        # "missing manifest entry" failures if a file isn't picked up by a
+        # given collectstatic run, at the cost of manual cache-busting.
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
     },
 }
 
